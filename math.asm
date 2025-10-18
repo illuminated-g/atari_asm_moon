@@ -19,7 +19,7 @@ math_init
 ; multiplies an 8 bit number by an 8 bit number stored in 16 bit result
 ; In: op1 in A, op2 in Y
 ; Out: reslo in x, reshi in A
-mul_8_8_16
+fast_mul_8
     sta PSLO     ;Index into sum table by A
     sta PSHI
     eor #$FF

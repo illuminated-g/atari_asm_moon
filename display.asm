@@ -1,4 +1,26 @@
 
+SAVMSC = $0058 ; Screen memory address
+SDLSTL = $0230 ; Display list address
+CHBAS  = $02F4 ; Character base
+
+VDSLST = $0200 ; DLI handler address
+VVBLKI = $0222 ; Immediate VBI vector
+VVBLKD = $0224 ; Deferred VBI vector
+SYSVBV = $E45F ; Immediate VBI jmp target
+XITVBV = $E462 ; Deferred VBI jmp target
+
+; OS shadow registers
+PCOLR0  = $02C0 ; Player 0 color
+PCOLR1  = $02C1 ; Player 1 color
+PCOLR2  = $02C2 ; Player 2 color
+PCOLR3  = $02C3 ; Player 3 color
+
+COLOR0  = $02C4 ; %01
+COLOR1  = $02C5 ; %10
+COLOR2  = $02C6 ; Normal %11
+COLOR3  = $02C7 ; Inverted %11
+COLOR4  = $02C8 ; %00 COLBK shadow
+
 ; zero page registers
 
 ; Starting address for the graphics currently in use for blit operations
@@ -38,9 +60,6 @@ SL_RUN  = $02 ; Incremented: SL_RUN, <Start>, <Count>
 
 ;-------------------------------
 ; Display list values
-blank8 = $70 ; 8 blank lines
-lms    = $40 ; load memory scan
-jvb    = $41 ; Jump while vblank
 
 med_gray = $06
 lt_gray  = $0A

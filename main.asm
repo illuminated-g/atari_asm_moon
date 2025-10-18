@@ -13,17 +13,16 @@ init
     lda #>dlist_title
     sta SDLSTL + 1
 
-    lda #1
-    sta SCR_INDEX ; init drawing buffer to SCR1
-
     ; set color palette
-    mva #black    COLB ; %00
-    mva #lt_gray  COL1 ; %01
-    mva #dk_blue  COL2 ; %10
-    mva #gold     COL3 ; %11
-    mva #med_gray COLI ; %11 (inverse)
+    mva #lt_gray  COLOR0 ; %01
+    mva #dk_blue  COLOR1 ; %10
+    mva #gold     COLOR2 ; %11
+    mva #med_gray COLOR3 ; %11 (inverse)
+    mva #black    COLOR4 ; %00
 
     mva #>Tile0 CHBAS ; Sets page containing start of char set (MSB of start)
+
+    jsr math_init
 
 main
     ; do stuff!
@@ -57,24 +56,12 @@ flip0
 
     inc SCR_FLIP
     jsr wait_flip
-    ;jsr flip_screen
-
-flip1
-    lda #<layout_title2
-    sta SCR_SRC
-    lda #>layout_title2
-    sta SCR_SRC+1
-    jsr screen_load
-
-    inc SCR_FLIP
-    jsr wait_flip
-    ;jsr flip_screen
     jmp flip0
 
 dli
     pha ; save A to stack
     lda #green
-    sta COLIH ;change invert color to green in hardware (resets at VBLANK)
+    sta COLPF3 ;change invert color to green in hardware (will reset at VBLANK)
     pla ; restore A to interrupted value
     rti
 
@@ -104,7 +91,6 @@ dlist_title_screen
 
     icl 'hardware.asm'
     icl 'math.asm'
-    icl 'display.asm'
     icl 'vast_tiles.asm'
     icl 'layout_title.asm'
     icl 'mult.asm'
