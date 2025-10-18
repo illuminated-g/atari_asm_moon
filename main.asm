@@ -27,9 +27,6 @@ init
 
 main
     ; do stuff!
-    
-    ; copy layout from screen_title to screen
-    ; initialize blit routine params
 
     ; set current layout address
     lda #<layout_title
@@ -50,12 +47,7 @@ main
     lda #NMIEN_DLI | NMIEN_VBI
     sta NMIEN
 
-flip_init0
-    ldx #$FF
-flip_delay0
-    dex
-    bne flip_delay0
-
+flip0
     ; load title screen layout to buffer
     lda #<layout_title
     sta SCR_SRC
@@ -65,15 +57,9 @@ flip_delay0
 
     inc SCR_FLIP
     jsr wait_flip
-    ;jmp flip_init0
+    ;jsr flip_screen
 
-flip_init1
-    ldx #$FF
-flip_delay1
-    dex
-    bne flip_delay1
-
-    ; load title screen layout to buffer
+flip1
     lda #<layout_title2
     sta SCR_SRC
     lda #>layout_title2
@@ -82,7 +68,8 @@ flip_delay1
 
     inc SCR_FLIP
     jsr wait_flip
-    jmp flip_init0
+    ;jsr flip_screen
+    jmp flip0
 
 dli
     pha ; save A to stack
@@ -99,23 +86,7 @@ vbi
     beq vbi_done ; skip flip if not set
     lda #0
     sta SCR_FLIP ; clear flip, not just dec in case multiple sources inc
-    lda SCR_INDEX
-    EOR #1 ; flip screen index
-
-    sta SCR_INDEX ; store index back to ZP
-    beq vbi_screen1 ; branch to screen1 if SCR0 now active
-vbi_screen0
-    lda #<SCR0
-    sta dlist_title_screen
-    lda #>SCR0
-    sta dlist_title_screen+1
-    jmp vbi_done
-
-vbi_screen1
-    lda #<SCR1
-    sta dlist_title_screen
-    lda #>SCR1
-    sta dlist_title_screen+1
+    jsr flip_screen
 
 vbi_done
     pla

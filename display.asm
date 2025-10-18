@@ -156,6 +156,26 @@ scr_load_char
 scr_char_done
     rts
 
+flip_screen
+    lda SCR_INDEX
+    EOR #1 ; flip screen index
+    sta SCR_INDEX ; store index back to ZP
+    beq flip_screen1 ; branch to screen1 if SCR0 now active
+
+flip_screen0
+    lda #<SCR0
+    sta dlist_title_screen
+    lda #>SCR0
+    sta dlist_title_screen+1
+    rts
+
+flip_screen1
+    lda #<SCR1
+    sta dlist_title_screen
+    lda #>SCR1
+    sta dlist_title_screen+1
+    rts
+
 ;-------------------------
 ; routine to wait for buffer flip
 wait_flip
