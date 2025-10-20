@@ -9,7 +9,7 @@
 ; $3307:$7FFF Unused
 ; $8000:$9FFF Cart B (Unused)
 ; $A000:$BFFF Cart A (Unused)
-; $DO0O:$DO1F CTIA
+; $D000:$D01F CTIA
 ; $D200:$D21F POKEY
 ; $D300:$D31F PIA
 ; $D400:$D41F ANTIC

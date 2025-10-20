@@ -1,4 +1,11 @@
-DMACTL  = $D400
+DMACTLH      = $D400
+DMA_NARROWPF = %00000001 ; narrow playfield
+DMA_STNDPF   = %00000010 ; standard playfield
+DMA_ENMIS    = %00000100 ; enable missile DMA
+DMA_ENPL     = %00001000 ; enable player DMA
+DMA_SLRES    = %00010000 ; single line resolution
+DMA_ENABLE   = %00100000 ; enable DMA
+
 CHACTL  = $D401
  
 DLIST   = $D402
@@ -9,8 +16,6 @@ HSCROL  = $D404
 VSCROL  = $D405
 
 PMBASE  = $D407
-PMBASEL = $D407
-PMBASEH = $D408
 
 CHBASE  = $D409
 
