@@ -160,6 +160,36 @@ load_1
     sta SCR_DST
     lda #>SCR1
     sta SCR_DST+1
+    jmp scr_load_inst
+
+screen_load_pos ; variant for load with offset in X and Y
+    stx SCR_DST
+    lda SCR_INDEX
+    bne scr_pos1
+scr_pos0
+    lda #>SCR0
+    sta SCR_DST+1
+    clc
+    lda #<SCR0
+    adc SCR_DST
+    jmp load_pos1
+scr_pos1
+    lda #>SCR1
+    sta SCR_DST+1
+    clc
+    lda #<SCR1
+    adc SCR_DST
+
+load_pos1
+    dey
+    bmi load_pos2
+    clc
+    adc #40
+    bcc load_pos1
+    inc SCR_DST+1
+    jmp load_pos1
+load_pos2
+    sta SCR_DST
 
 scr_load_inst
     ldy #0
@@ -262,6 +292,13 @@ flip_screen1
     ;sta dlist_title_screen
     lda #>SCR1
     sta dlist_title_screen+1
+    rts
+
+wait_vbi
+    lda $14 ; rtclock LSB
+wait_vbi_loop
+    cmp $14
+    beq wait_vbi_loop
     rts
 
 ;-------------------------
@@ -420,14 +457,235 @@ pm_load_done
     rts
 
 
-
-; player index (0-3) in X
-; distance in Y
+; src offset in X
+; height in Y
+; player index (0-3) in A
 player_up
-    nop
+    stx PM_SRC
+    ldx PM_INDEX
+    bne pup_pm1p0
+
+pup_pm0p0
+    sec
+    sbc #1
+    bpl pup_pm0p1
+    lda #>PM0P0
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM0P0
+    sta PM_SRC
+    bcc pup_pm0p0_done
+    inc PM_SRC+1
+pup_pm0p0_done
+    jmp pup_copy
+
+pup_pm0p1
+    sec
+    sbc #1
+    bpl pup_pm0p2
+    lda #>PM0P1
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM0P1
+    sta PM_SRC
+    bcc pup_pm0p1_done
+    inc PM_SRC+1
+pup_pm0p1_done
+    jmp pup_copy
+
+pup_pm0p2
+    sec
+    sbc #1
+    bpl pup_pm0p3
+    lda #>PM0P2
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM0P2
+    sta PM_SRC
+    bcc pup_pm0p2_done
+    inc PM_SRC+1
+pup_pm0p2_done
+    jmp pup_copy
+
+pup_pm0p3
+    lda #>PM0P3
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM0P3
+    sta PM_SRC
+    bcc pup_pm0p3_done
+    inc PM_SRC+1
+pup_pm0p3_done
+    jmp pup_copy
+
+pup_pm1p0
+    sec
+    sbc #1
+    bpl pup_pm1p1
+    lda #>PM1P0
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM1P0
+    sta PM_SRC
+    bcc pup_pm1p0_done
+    inc PM_SRC+1
+pup_pm1p0_done
+    jmp pup_copy
+
+pup_pm1p1
+    sec
+    sbc #1
+    bpl pup_pm1p2
+    lda #>PM1P1
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM1P1
+    sta PM_SRC
+    bcc pup_pm1p1_done
+    inc PM_SRC+1
+pup_pm1p1_done
+    jmp pup_copy
+
+pup_pm1p2
+    sec
+    sbc #1
+    bpl pup_pm1p3
+    lda #>PM1P2
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM1P2
+    sta PM_SRC
+    bcc pup_pm1p2_done
+    inc PM_SRC+1
+pup_pm1p2_done
+    jmp pup_copy
+
+pup_pm1p3
+    lda #>PM1P3
+    sta PM_SRC+1
+    lda PM_SRC
+    adc #<PM1P3
+    sta PM_SRC
+    bcc pup_pm1p3_done
+    inc PM_SRC+1
+pup_pm1p3_done
+    jmp pup_copy
+
+pup_copy
+    tya
+    tax
+    ldy #0
+pup_copy_loop
+    lda (PM_SRC), y
+    sta (PM_SRC-1), y
+    iny
+    dex
+    bne pup_copy_loop
+pup_done
+    rts
 
 player_down
     nop
+
+; In: player index in A
+pm_clear
+    ldy #128 ; rows in a PM region
+    ldx PM_INDEX
+    bne pm_clear_pm1p0
+
+pm_clear_pm0p0
+    sec
+    sbc #1
+    bpl pm_clear_pm0p1
+    lda #<PM0P0
+    sta PM_DST
+    lda #>PM0P0
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm0p1
+    sec
+    sbc #1
+    bpl pm_clear_pm0p2
+    lda #<PM0P1
+    sta PM_DST
+    lda #>PM0P1
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm0p2
+    sec
+    sbc #1
+    bpl pm_clear_pm0p3
+    lda #<PM0P2
+    sta PM_DST
+    lda #>PM0P2
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm0p3
+    sec
+    sbc #1
+    bpl pm_clear_pm0p4
+    lda #<PM0P3
+    sta PM_DST
+    lda #>PM0P3
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm0p4
+    lda #<PM0M
+    sta PM_DST
+    lda #>PM0M
+    sta PM_DST+1
+    jmp pm_clear_copy
+
+pm_clear_pm1p0
+    sec
+    sbc #1
+    bpl pm_clear_pm1p1
+    lda #<PM1P0
+    sta PM_DST
+    lda #>PM1P0
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm1p1
+    sec
+    sbc #1
+    bpl pm_clear_pm1p2
+    lda #<PM1P1
+    sta PM_DST
+    lda #>PM1P1
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm1p2
+    sec
+    sbc #1
+    bpl pm_clear_pm1p3
+    lda #<PM1P2
+    sta PM_DST
+    lda #>PM1P2
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm1p3
+    sec
+    sbc #1
+    bpl pm_clear_pm1p4
+    lda #<PM1P3
+    sta PM_DST
+    lda #>PM1P3
+    sta PM_DST+1
+    jmp pm_clear_copy
+pm_clear_pm1p4
+    lda #<PM1M
+    sta PM_DST
+    lda #>PM1M
+    sta PM_DST+1
+    jmp pm_clear_copy
+
+pm_clear_copy
+    lda #0
+    sta (PM_DST), y
+    dey
+    bpl pm_clear_copy
+pm_clear_done
+    rts
 
 missile_up
     nop
